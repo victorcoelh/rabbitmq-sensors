@@ -1,2 +1,3 @@
-pub mod connection;
-pub mod callback;
+pub mod networking;
+pub mod entities;
+pub mod gui;

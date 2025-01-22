@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 amqprs = "2.1.0"
+rand = "0.8.5"
 tokio = "1.43.0"
