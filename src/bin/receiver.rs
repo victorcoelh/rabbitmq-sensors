@@ -1,12 +1,5 @@
-use rabbitmq_sensor::networking::BrokerConnection;
-use tokio::sync::Notify;
+use rabbitmq_sensor::gui::state::Counter;
 
-#[tokio::main]
-pub async fn main() {
-    let broker = BrokerConnection::connect(true, "", "").await;
-    broker.listen_to_queue().await;
-    println!("Consumidor iniciado!");
-
-    let guard = Notify::new();
-    guard.notified().await;
+pub fn main() -> iced::Result {
+    iced::run("A cool counter", Counter::update, Counter::view)
 }
