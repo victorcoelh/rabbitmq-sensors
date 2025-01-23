@@ -1,25 +1,33 @@
-use iced::widget::{button, column, text, Column};
+use std::sync::mpsc::Receiver;
+use std::sync::{Arc, Mutex};
 
-use super::messages::Message;
-
-#[derive(Default)]
-pub struct Counter {
-    value: i64
+#[derive(Debug, Clone)]
+pub enum Message {
+    AddSensor(String),
+    CloseDialogue(usize),
 }
 
-impl Counter {
-    pub fn update(&mut self, message: Message) {
-        match message {
-            Message::Increment => self.value +=1,
-            Message::Decrement => self.value -=1,
+pub struct SensorData {
+    pub receiver: Arc<Mutex<Receiver<String>>>,
+    pub names: Vec<String>,
+    pub errors: Vec<Option<String>>
+}
+
+impl SensorData {
+    pub fn new(receiver: Arc<Mutex<Receiver<String>>>) -> Self {
+        SensorData {
+            receiver: receiver,
+            names: Vec::new(),
+            errors: Vec::new(),
         }
     }
 
-    pub fn view(&self) -> Column<Message> {
-        column![
-            button("+").on_press(Message::Increment),
-            text(self.value),
-            button("-").on_press(Message::Decrement),
-        ]
+    pub fn add_sensor(&mut self, sensor_name: String) {
+        self.names.push(sensor_name);
+        self.errors.push(None);
+    }
+
+    pub fn amount_of_sensors(&self) -> usize {
+        self.names.len()
     }
 }

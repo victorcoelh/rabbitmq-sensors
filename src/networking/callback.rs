@@ -1,7 +1,15 @@
+use std::sync::mpsc::Sender;
 use amqprs::consumer::BlockingConsumer;
 
-#[derive(Default)]
-pub struct MessageConsumer { }
+pub struct MessageConsumer {
+    sender: Sender<String>,
+}
+
+impl MessageConsumer {
+    pub fn new(sender: Sender<String>) -> Self {
+        MessageConsumer { sender }
+    }
+}
 
 impl BlockingConsumer for MessageConsumer {
     fn consume(
@@ -11,6 +19,9 @@ impl BlockingConsumer for MessageConsumer {
             _basic_properties: amqprs::BasicProperties,
             content: Vec<u8>,
         ) {
-        println!("{}", String::from_utf8(content).unwrap());
+        let text_data = String::from_utf8(content).unwrap();
+
+        println!("Received: {}", text_data);
+        self.sender.send(text_data).unwrap();
     }
 }

@@ -1,3 +1,5 @@
+use std::sync::mpsc::Sender;
+
 use amqprs::BasicProperties;
 use amqprs::callbacks::DefaultChannelCallback;
 use amqprs::connection::{Connection, OpenConnectionArguments};
@@ -39,14 +41,14 @@ impl BrokerConnection {
             .unwrap();
     }
 
-    pub async fn listen_to_queue(&self) {
+    pub async fn listen_to_queue(&self, sender: Sender<String>) {
         let args = BasicConsumeArguments::new(
                 &self.queue_name, "consumer_1"
             )
             .manual_ack(false)
             .finish();
 
-        self.channel.basic_consume_blocking(MessageConsumer::default(), args)
+        self.channel.basic_consume_blocking(MessageConsumer::new(sender), args)
             .await
             .unwrap();
     }

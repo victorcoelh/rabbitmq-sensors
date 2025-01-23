@@ -33,6 +33,7 @@ async fn create_iot_sensor(sensor_type: String, sensor_name: String, min: f32, m
     loop {
         let sensor_reading = generate_sensor_reading(min, max, 0.2);
         if sensor_reading < min || sensor_reading > max {
+            println!("sent message");
             broker.send_message(&format!("{sensor_type}.{sensor_name}: {sensor_reading:.2}")).await;
         }
 
