@@ -22,7 +22,7 @@ pub async fn main() -> iced::Result {
 
     // initialize ui logic
     iced::application("RabbitMQ Sensors", update, main_view)
-        .theme(|_| iced::Theme::Dark)
+        .theme(|_| iced::Theme::CatppuccinMacchiato)
         .subscription(subscription)
         .run_with(move || (SensorData::new(gui_receiver), Task::none()))
 }

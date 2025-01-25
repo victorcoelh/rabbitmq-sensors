@@ -1,5 +1,6 @@
+use iced::theme::palette::EXTENDED_CATPPUCCIN_MACCHIATO;
 use iced::widget::{button, column, container, text, Container, Row};
-use iced::{alignment, Element, Length};
+use iced::{Element, Length};
 
 use super::{Message, SensorData};
 
@@ -13,26 +14,34 @@ pub fn main_view(sensor_data: &SensorData) -> Element<Message> {
         row = row.push(sensor_widget(sensor, sensor_data));
     }
 
-    container(row.wrap())
-        .height(Length::Fill)
-        .width(Length::Fill)
-        .align_x(alignment::Horizontal::Center)
-        .align_y(alignment::Vertical::Center)
-        .into()
+    container(row.wrap()).center(Length::Fill).into()
 }
 
 pub fn sensor_widget(index: usize, sensor_data: &SensorData) -> Container<Message> {
+    let header = container(
+        text(&sensor_data.names[index])
+            .center()
+            .color(EXTENDED_CATPPUCCIN_MACCHIATO.primary.base.text),
+    )
+    .center_x(250)
+    .center_y(40)
+    .style(|_| container::Style::from(EXTENDED_CATPPUCCIN_MACCHIATO.primary.base.color));
+
     let error_indication = match sensor_data.errors[index].clone() {
-        Some(error) => text(format!(
-            "WARNING! Sensor reading not within limits: {error}"
-        )),
-        None => text("No errors detected."),
+        None => text("No errors detected.\n"),
+        Some(error) => text(format!("Sensor not within limit: {error}"))
+            .color(EXTENDED_CATPPUCCIN_MACCHIATO.danger.base.color)
+            .center(),
     };
 
-    let column = column!(text(&sensor_data.names[index]), error_indication);
+    let action = button("Dismiss").on_press(Message::CloseDialogue(index));
+    let contents = column!(header, error_indication, action)
+        .align_x(iced::Alignment::Center)
+        .spacing(10);
 
-    container(column)
+    container(contents)
+        .height(150)
         .padding(10)
-        .center(200)
+        .center_x(250)
         .style(container::rounded_box)
 }
