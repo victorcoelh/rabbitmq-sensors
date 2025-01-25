@@ -1,7 +1,7 @@
 use iced::widget::{button, column, container, text, Container, Row};
 use iced::{alignment, Element, Length};
 
-use super::{SensorData, Message};
+use super::{Message, SensorData};
 
 pub fn main_view(sensor_data: &SensorData) -> Element<Message> {
     let mut row = Row::new()
@@ -13,10 +13,6 @@ pub fn main_view(sensor_data: &SensorData) -> Element<Message> {
         row = row.push(sensor_widget(sensor, sensor_data));
     }
 
-    row = row.push(
-        button("add sensor").on_press(Message::AddSensor("beans".to_string()))
-    );
-
     container(row.wrap())
         .height(Length::Fill)
         .width(Length::Fill)
@@ -26,10 +22,14 @@ pub fn main_view(sensor_data: &SensorData) -> Element<Message> {
 }
 
 pub fn sensor_widget(index: usize, sensor_data: &SensorData) -> Container<Message> {
-    let column = column!(
-        text(&sensor_data.names[index]),
-        text("No errors detected.")
-    );
+    let error_indication = match sensor_data.errors[index].clone() {
+        Some(error) => text(format!(
+            "WARNING! Sensor reading not within limits: {error}"
+        )),
+        None => text("No errors detected."),
+    };
+
+    let column = column!(text(&sensor_data.names[index]), error_indication);
 
     container(column)
         .padding(10)

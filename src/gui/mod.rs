@@ -1,8 +1,7 @@
-pub mod example;
 mod state;
-mod view;
 mod update;
+mod view;
 
 pub use state::{Message, SensorData};
+pub use update::{subscription, update};
 pub use view::main_view;
-pub use update::{update, subscription};

@@ -1,22 +1,23 @@
-use std::sync::{mpsc::{self, Sender}, Arc, Mutex};
+use std::sync::{
+    mpsc::{self, Sender},
+    Arc, Mutex,
+};
 
 use iced::Task;
-use rabbitmq_sensor::{gui::{main_view, subscription, update, SensorData}, networking::BrokerConnection};
+use rabbitmq_sensor::{
+    gui::{main_view, subscription, update, SensorData},
+    networking::BrokerConnection,
+};
 use tokio::sync::Notify;
 
-pub fn main() -> iced::Result {
+#[tokio::main]
+pub async fn main() -> iced::Result {
     // initialize network to gui channel
     let (sender, receiver) = mpsc::channel();
     let gui_receiver = Arc::new(Mutex::new(receiver));
 
-    // initialize networking logic
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .unwrap();
-
-    runtime.spawn(async move {
-        listen_to_broker(sender)
+    tokio::spawn(async move {
+        listen_to_broker(sender).await;
     });
 
     // initialize ui logic
